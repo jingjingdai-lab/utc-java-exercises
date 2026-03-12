@@ -36,6 +36,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class jeu_client {
+    
+  
+
+
     public static void main (String[] args){
         try{
             //1.连接服务器
@@ -79,32 +83,42 @@ public class jeu_client {
             String reponse = in.readUTF();//socket里面的读写是按顺序的 TCP流通信 数据不会乱序 发一个读一个
             System.out.println("Le serveur a dit : " + reponse);
             
-            
-           
-        
+            int priseJoueur;
+            int nbAlluRest;
 
              //3.进入游戏主循环
            do{
                 //每一轮开始前先接收server的消息 现在还剩多少根了 轮到谁行动了
                 //接收剩余火柴数量并展示给玩家
-                int nbAlluRest = in.readInt();//server
+                nbAlluRest = in.readInt();//server发来的消息 显示现在还剩几根
                 System.out.println("Allumettes restantes : " + nbAlluRest);
-            
+                System.out.println("Maintenant: " + qui);
+                
+                 
+                //如果已经小于0了就不继续玩了
+                if (nbAlluRest <= 0) {
+                    break;
+                  }
+                
+                //如果轮到玩家就发给server自己要取多少根
+                if (qui == 0) {
+                  
+                  do{//反复输入直到正确
+                   System.out.println("Combien d'allumettes voulez-vous prendre ?");
+                   priseJoueur = sc.nextInt();
+                   if ((priseJoueur > nbAlluRest) || (priseJoueur > nb_allu_max))
+                      {
+                       System.out.println ("Erreur !\n");
+                      }
+                  }while ((priseJoueur > nbAlluRest) || (priseJoueur > nb_allu_max));
+              
+                  out.writeInt(priseJoueur);//正确后输出给server
 
-
-
-
- //3.玩家输入这次要取几个并发送给服务器
-            System.out.println("Combien d'allumettes voulez-vous prendre ?");
-            int priseJoueur = sc.nextInt();//键盘输入都是sc 在连接的时候创建的
-            out.writeInt(priseJoueur);
-        } 
-            
-           
-            
-            
-            
-            
+                  qui = in.readInt();//server发来的消息 现在轮到谁了
+                  }
+              }while (nbAlluRest >0);
+            }
+               
             
             catch (Exception e) {
             e.printStackTrace();//详细打印错误信息

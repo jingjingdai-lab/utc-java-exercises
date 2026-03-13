@@ -60,9 +60,6 @@ public class jeu_server {
             
             //3.初始化游戏状态
             int nbAlluRest = nb_max_d;//server创建变量用于存放剩余火柴数量 然后把这个状态发给client
-            out.writeInt(nbAlluRest);//不需要每次输入输出都创建输出流 建立连接的时候创一个 之后都用同一个
-            
-
             int priseJoueur;
 
             //4.进入游戏主循环
@@ -75,18 +72,22 @@ public class jeu_server {
             {
                     priseJoueur = in.readInt();
                     System.out.println ("\n玩家拿了几个:"+ priseJoueur);
-                    nbAlluRest -= priseJoueur;   
             }
             else//轮到电脑
             {
                 priseJoueur = jeu_ordi (nbAlluRest , nb_allu_max);
                 System.out.println ("\nPrise de l'ordi :"+ priseJoueur);
+                out.writeInt(priseJoueur);//把电脑拿了几根发送给client让他看到
             }
             //回合结束server更新剩余数量和qui现在轮到谁并传递给client
             qui=(qui+1)%2;//切换回合！
-            nbAlluRest= nbAlluRest - priseJoueur;//更新剩余火柴数量
-            out.writeInt(qui);
-            out.writeInt(nbAlluRest);
+            nbAlluRest -= priseJoueur;
+
+            //如果游戏结束要把当前信息传递给已经退出循环的client 要不然无法显示成功还是失败
+            if (nbAlluRest <= 0) {
+                 out.writeInt(nbAlluRest);
+                 out.writeInt(qui);
+                }
             }while (nbAlluRest >0);
     
 

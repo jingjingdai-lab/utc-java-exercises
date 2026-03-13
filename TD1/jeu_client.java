@@ -92,6 +92,7 @@ public class jeu_client {
                 //接收剩余火柴数量并展示给玩家
                 nbAlluRest = in.readInt();//server发来的消息 显示现在还剩几根
                 System.out.println("Allumettes restantes : " + nbAlluRest);
+                qui = in.readInt();//server发来的消息 现在轮到谁了
                 System.out.println("Maintenant: " + qui);
                 
                  
@@ -113,10 +114,24 @@ public class jeu_client {
                   }while ((priseJoueur > nbAlluRest) || (priseJoueur > nb_allu_max));
               
                   out.writeInt(priseJoueur);//正确后输出给server
-
-                  qui = in.readInt();//server发来的消息 现在轮到谁了
                   }
+                  else{//电脑环节 接收电脑发来的消息
+                     int priseOrdi = in.readInt();   // 接收 server 发来的
+                     System.out.println("\n\nL'ordinateur prend : " + priseOrdi);//打印电脑的获取的消息
+                  }
+                  
               }while (nbAlluRest >0);
+
+
+              nbAlluRest = in.readInt();//server发来的消息 显示现在还剩几根
+              qui = in.readInt();//server发来的消息 现在轮到谁了
+
+              //胜利规则
+              if (qui == 0) /* Cest à nous de jouer */
+               System.out.println ("\nVous avez gagné!\n");
+               else
+               System.out.println ("\nVous avez perdu!\n");
+
             }
                
             

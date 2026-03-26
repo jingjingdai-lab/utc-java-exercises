@@ -9,14 +9,34 @@ import java.util.Hashtable;
 @WebServlet("/UserManager")//url映射
 public class UserManager extends HttpServlet {
     //这是一个内存数据库
-    public static Hashtable<String, User> usersTable = new Hashtable<String, User>();
+    public static Hashtable<String, User> usersTable = new Hashtable<String, User>(); 
+    
+    //初始化一个role为admin的用户用于测试
+    static {
+    usersTable.put("admin@test.com",
+        new User("Admin", "Root", "admin@test.com", "1234", "male", "admin"));
+    }
     
     //当method=“post”的时候就会进入这里
     //post会携带数据（用户在表单中输入的） 去req请求里找到username的值
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
         throws IOException, ServletException{
-        
+
+        // 先检查 session 和 role
+        HttpSession session = req.getSession(false);
+        //如果没有登录直接送回登录界面
+        if (session == null || session.getAttribute("login") == null) {
+            resp.sendRedirect("connexion.html");
+            return;
+        }
+
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equals(role)) {
+            resp.getWriter().println("Accès refusé : admin seulement.");
+            return;
+        }
+         
         //防止乱码
         req.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html;charset=UTF-8");
@@ -66,6 +86,22 @@ public class UserManager extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
+
+        // 先检查 session 和 role
+        HttpSession session = req.getSession(false);
+
+        if (session == null || session.getAttribute("login") == null) {
+            resp.sendRedirect("connexion.html");
+            return;
+        }
+
+        String role = (String) session.getAttribute("role");
+        if (!"admin".equals(role)) {
+            resp.getWriter().println("Accès refusé : admin seulement.");
+            return;
+        }
+        
+
         //告诉浏览器我要返回的是html页面
         resp.setContentType("text/html;charset=UTF-8");
         

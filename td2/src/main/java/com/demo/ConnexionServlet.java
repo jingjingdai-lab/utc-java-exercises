@@ -27,19 +27,32 @@ public class ConnexionServlet extends HttpServlet {
         
         //判断是否登录成功了
         if (user != null && user.getPassword().equals(password)) {
-            HttpSession session = req.getSession();//创建session存入信息
-            session.setAttribute("login", user.getEmail());
-            session.setAttribute("role", user.getRole());
-            
-            //成功显示成功信息
-            resp.getWriter().println("<html><body>");
-            resp.getWriter().println("<h2>Connexion réussie</h2>");
-            resp.getWriter().println("<p>Bienvenue " + user.getFirstname() + "</p>");
-            resp.getWriter().println("<p>Login : " + session.getAttribute("login") + "</p>");
-            resp.getWriter().println("<p>Role : " + session.getAttribute("role") + "</p>");
-            resp.getWriter().println("<a href='Deconnexion'>Se déconnecter</a>");
-            resp.getWriter().println("</body></html>");
-        } else {//失败显示失败信息
+    HttpSession session = req.getSession();
+    session.setAttribute("login", user.getEmail());
+    session.setAttribute("role", user.getRole());
+
+    if ("admin".equals(user.getRole())) {//role为admin的
+                resp.getWriter().println("<!DOCTYPE html>");
+                resp.getWriter().println("<html><head><meta charset='UTF-8'><title>Navigation</title></head>");
+                resp.getWriter().println("<body>");
+                resp.getWriter().println("<h1>Hello " + session.getAttribute("login") + "</h1>");
+                resp.getWriter().println("<nav><ul>");
+                resp.getWriter().println("<li>Connected</li>");
+                resp.getWriter().println("<li><a href='form.html'>Créer un nouveau utilisateur</a></li>");
+                resp.getWriter().println("<li><a href='UserManager'>Afficher la liste des utilisateurs</a></li>");
+                resp.getWriter().println("<li><a href='Deconnexion'>Se déconnecter</a></li>");
+                resp.getWriter().println("</ul></nav>");
+                resp.getWriter().println("</body></html>");
+            } else {//role为user的
+                resp.getWriter().println("<html><body>");
+                resp.getWriter().println("<h2>Connexion réussie</h2>");
+                resp.getWriter().println("<p>Bienvenue " + user.getFirstname() + "</p>");
+                resp.getWriter().println("<p>Login : " + session.getAttribute("login") + "</p>");
+                resp.getWriter().println("<p>Role : " + session.getAttribute("role") + "</p>");
+                resp.getWriter().println("<a href='Deconnexion'>Se déconnecter</a>");
+                resp.getWriter().println("</body></html>");
+            }
+        } else {//登录失败的
             resp.getWriter().println("<html><body>");
             resp.getWriter().println("<h2>Échec de connexion</h2>");
             resp.getWriter().println("<p>Email ou mot de passe incorrect.</p>");

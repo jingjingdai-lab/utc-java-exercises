@@ -1,2 +1,4 @@
+com\demo\ConnexionServlet.class
+com\demo\InsertUserServlet.class
 com\demo\UserManager.class
 com\demo\User.class
